@@ -13,24 +13,35 @@ export function parseLinkedInPaste(rawText: string): ParsedApplication[] {
   const applications: ParsedApplication[] = []
 
   for (const line of lines) {
-    // LinkedIn format: "Company - Position - Location - Applied X ago"
-    // or: "Company - Position - Applied X ago"
+    // Try to parse in multiple formats
+
+    // Format 1: "Company - Position - Location - Applied X ago"
+    // Format 2: "Company - Position - Applied X ago"
+    // Format 3: Just "Company - Position" (default to today)
 
     const parts = line.split(' - ').map(p => p.trim())
-    if (parts.length < 3) continue
+    if (parts.length < 2) continue // Need at least company and position
 
     const company = parts[0]
     const position = parts[1]
 
-    // Find "Applied X ago" part
-    const appliedIndex = parts.findIndex(p => p.toLowerCase().startsWith('applied'))
-    if (appliedIndex === -1) continue
+    // Find "Applied X ago" part (if exists)
+    const appliedIndex = parts.findIndex(p => p.toLowerCase().includes('applied'))
 
-    const location = appliedIndex > 2 ? parts[2] : undefined
-    const appliedText = parts[appliedIndex]
+    let dateApplied: string
+    let location: string | undefined
 
-    // Parse relative date
-    const dateApplied = parseRelativeDate(appliedText)
+    if (appliedIndex !== -1) {
+      // Has "Applied X ago"
+      location = appliedIndex > 2 ? parts[2] : undefined
+      const appliedText = parts[appliedIndex]
+      dateApplied = parseRelativeDate(appliedText)
+    } else {
+      // No "Applied" text, check if there's a location
+      location = parts.length > 2 ? parts[2] : undefined
+      // Default to today
+      dateApplied = new Date().toISOString().split('T')[0]
+    }
 
     applications.push({
       company,

@@ -14,7 +14,11 @@ export async function POST(request: NextRequest) {
     const parsed = parseLinkedInPaste(rawText)
 
     if (parsed.length === 0) {
-      return NextResponse.json({ error: 'No applications found in text' }, { status: 400 })
+      console.log('Parse failed. Raw text:', rawText)
+      return NextResponse.json({
+        error: 'No applications found. Format: "Company - Position - Applied X ago"',
+        received: rawText.substring(0, 100)
+      }, { status: 400 })
     }
 
     // Convert to database format

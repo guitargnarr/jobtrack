@@ -21,7 +21,7 @@ export default function Dashboard() {
 
   async function loadData() {
     // For MVP: Use localStorage
-    const stored = localStorage.getItem('jobtrack_applications')
+    const stored = localStorage.getItem('traction_applications')
 
     if (stored) {
       const data = JSON.parse(stored)
