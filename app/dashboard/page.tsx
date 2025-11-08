@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { Application, Stats } from '@/lib/supabase'
+import IndustryGraph from '@/components/IndustryGraph'
+import IndustryResponseRates from '@/components/IndustryResponseRates'
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats>({
@@ -87,8 +89,16 @@ export default function Dashboard() {
           />
         </div>
 
+        {/* Industry Visualizations */}
+        {applications.length > 0 && (
+          <>
+            <IndustryGraph applications={applications} />
+            <IndustryResponseRates applications={applications} />
+          </>
+        )}
+
         {/* Applications Table */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6 mt-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">All Applications</h2>
             <a
@@ -182,16 +192,18 @@ const mockApplications: Application[] = [
     date_applied: '2025-11-05',
     source: 'LinkedIn',
     status: 'response',
+    industry: 'Data/Analytics',
     created_at: '2025-11-05T00:00:00Z'
   },
   {
     id: '2',
-    company: 'StartupXYZ',
+    company: 'Google',
     position: 'ML Engineer',
     location: 'San Francisco, CA',
     date_applied: '2025-11-04',
     source: 'LinkedIn',
     status: 'applied',
+    industry: 'Tech/SaaS',
     created_at: '2025-11-04T00:00:00Z'
   },
   {
@@ -202,6 +214,7 @@ const mockApplications: Application[] = [
     date_applied: '2025-11-03',
     source: 'Robert Half',
     status: 'interview',
+    industry: 'Tech/SaaS',
     created_at: '2025-11-03T00:00:00Z'
   }
 ]

@@ -28,7 +28,8 @@ export async function POST(request: NextRequest) {
       location: app.location,
       date_applied: app.dateApplied,
       source: app.source,
-      status: 'applied' as const
+      status: 'applied' as const,
+      industry: app.industry
     }))
 
     // For MVP: Return parsed data (client will use localStorage)

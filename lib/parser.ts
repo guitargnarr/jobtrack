@@ -6,6 +6,7 @@ export interface ParsedApplication {
   location?: string
   dateApplied: string // ISO format
   source: string
+  industry: string // Auto-classified for insights
 }
 
 export function parseLinkedInPaste(rawText: string): ParsedApplication[] {
@@ -48,11 +49,74 @@ export function parseLinkedInPaste(rawText: string): ParsedApplication[] {
       position,
       location,
       dateApplied,
-      source: 'LinkedIn'
+      source: 'LinkedIn',
+      industry: classifyIndustry(position, company)
     })
   }
 
   return applications
+}
+
+export function classifyIndustry(position: string, company: string): string {
+  const text = `${position} ${company}`.toLowerCase()
+
+  // Healthcare (specific companies + keywords)
+  if (text.match(/humana|anthem|cigna|unitedhealth|cvs health|health|medical|hospital|pharma|clinic|patient|care|doctor|nurse/)) {
+    return 'Healthcare'
+  }
+
+  // Tech/SaaS (specific companies + keywords)
+  if (text.match(/google|meta|facebook|amazon|microsoft|apple|netflix|uber|airbnb|stripe|software|engineer|developer|sre|devops|frontend|backend|fullstack|tech|saas|programmer|coding/)) {
+    return 'Tech/SaaS'
+  }
+
+  // Finance (specific companies + keywords)
+  if (text.match(/jpmorgan|goldman|morgan stanley|wells fargo|bank of america|citi|finance|bank|trading|investment|fintech|capital|wealth|credit|insurance/)) {
+    return 'Finance'
+  }
+
+  // Data/Analytics (position-focused)
+  if (text.match(/data|analyst|analytics|business intelligence|bi |tableau|power bi|sql|database|insights|metrics/)) {
+    return 'Data/Analytics'
+  }
+
+  // AI/ML (specific, high-value)
+  if (text.match(/\bai\b|machine learning|\bml\b|artificial intelligence|deep learning|nlp|computer vision|llm|model|pytorch|tensorflow/)) {
+    return 'AI/ML'
+  }
+
+  // Consulting
+  if (text.match(/mckinsey|bcg|bain|deloitte|accenture|pwc|ey|kpmg|consult|advisory|strategy/)) {
+    return 'Consulting'
+  }
+
+  // Marketing/Sales
+  if (text.match(/marketing|sales|growth|customer success|account manager|sdr|bdr|demand gen|content|brand/)) {
+    return 'Marketing/Sales'
+  }
+
+  // Education
+  if (text.match(/teacher|education|professor|tutor|instructor|university|school|college|academic|student/)) {
+    return 'Education'
+  }
+
+  // Retail/E-commerce
+  if (text.match(/retail|ecommerce|e-commerce|store|shop|walmart|target|merchandise/)) {
+    return 'Retail/E-commerce'
+  }
+
+  // Manufacturing/Logistics
+  if (text.match(/manufacturing|factory|production|supply chain|logistics|warehouse|operations|industrial/)) {
+    return 'Manufacturing/Logistics'
+  }
+
+  // Government/Non-Profit
+  if (text.match(/government|federal|state|nonprofit|ngo|public sector|civic|policy/)) {
+    return 'Government/Non-Profit'
+  }
+
+  // Default
+  return 'Other'
 }
 
 function parseRelativeDate(text: string): string {

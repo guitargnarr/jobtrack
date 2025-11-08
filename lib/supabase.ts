@@ -18,6 +18,7 @@ export interface Application {
   date_applied: string
   source: string
   status: 'applied' | 'response' | 'interview' | 'rejected'
+  industry?: string
   response_date?: string
   notes?: string
   created_at?: string
